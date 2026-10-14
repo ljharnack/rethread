@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Order placed{% endblock %}
+{% block content %}
+<div class="form-page center">
+  <h1>Thank you!</h1>
+  <p>Order #{{ order.id }} for <strong>{{ order.total }}</strong> is confirmed.</p>
+  <ul class="plain">{% for l in order.items %}<li>{{ l.title }} ({{ l.price }})</li>{% endfor %}</ul>
+  <a class="btn" href="{{ url_for('shop.index') }}">Keep shopping</a>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_macros.html" import field %}
+{% block title %}Sell an item{% endblock %}
+{% block content %}
+<div class="form-page">
+  <h1>List an item</h1>
+  <form method="post" enctype="multipart/form-data" class="stack" novalidate>
+    {{ form.hidden_tag() }}
+    {{ field(form.title, placeholder="e.g. Vintage denim jacket") }}
+    {{ field(form.brand) }}
+    <div class="row">
+      {{ field(form.category) }}
+      {{ field(form.size) }}
+      {{ field(form.condition) }}
+    </div>
+    {{ field(form.price, placeholder="25.00") }}
+    {{ field(form.description, rows=4) }}
+    {{ field(form.image, accept="image/*") }}
+    <button class="btn">Publish listing</button>
+  </form>
+</div>
+{% endblock %}

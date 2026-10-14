@@ -1,0 +1,28 @@
+{% macro photo(listing, cls='') -%}
+  {% if listing.image_filename %}
+    <img class="photo {{ cls }}" src="{{ url_for('static', filename='uploads/' ~ listing.image_filename) }}" alt="{{ listing.title }}">
+  {% else %}
+    <div class="photo placeholder tone-{{ listing.id % 6 }} {{ cls }}" role="img" aria-label="{{ listing.title }}">
+      <span>{{ listing.category }}</span>
+    </div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro card(listing) -%}
+  <a class="card" href="{{ url_for('shop.listing_detail', listing_id=listing.id) }}">
+    {{ photo(listing) }}
+    <div class="card-body">
+      <div class="card-top"><strong>{{ listing.price }}</strong><span class="size">{{ listing.size }}</span></div>
+      <div class="card-title">{{ listing.title }}</div>
+      <div class="muted">{{ listing.brand }}</div>
+    </div>
+  </a>
+{%- endmacro %}
+
+{% macro field(f) -%}
+  <label class="field">
+    <span>{{ f.label.text }}</span>
+    {{ f(**kwargs) }}
+    {% for e in f.errors %}<small class="error">{{ e }}</small>{% endfor %}
+  </label>
+{%- endmacro %}

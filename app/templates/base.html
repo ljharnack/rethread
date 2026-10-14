@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ReThread{% endblock %} · ReThread</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="demo-banner">Portfolio demo project. No real items are sold and no payments are taken.</div>
+  <header class="site-header">
+    <a class="logo" href="{{ url_for('shop.index') }}">ReThread</a>
+    <form class="search" action="{{ url_for('shop.index') }}" method="get">
+      <input type="search" name="q" placeholder="Search brands, items…" value="{{ request.args.get('q', '') }}" aria-label="Search">
+    </form>
+    <nav>
+      <a href="{{ url_for('shop.sell') }}" class="btn btn-small">Sell</a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('shop.dashboard') }}">{{ current_user.username }}</a>
+        <form action="{{ url_for('auth.logout') }}" method="post" class="inline">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="link">Log out</button>
+        </form>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}">Log in</a>
+      {% endif %}
+      <a href="{{ url_for('shop.cart') }}" class="bag">Bag{% if cart_count %} <span class="count">{{ cart_count }}</span>{% endif %}</a>
+    </nav>
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">ReThread · Built with Flask &amp; SQLite</footer>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% from "_macros.html" import photo %}
+{% block title %}{{ listing.title }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('shop.index') }}" class="back muted">← Back to shop</a>
+<div class="detail">
+  {{ photo(listing, 'large') }}
+  <div class="detail-info">
+    <p class="muted">{{ listing.brand }}</p>
+    <h1>{{ listing.title }}</h1>
+    <p class="price">{{ listing.price }}</p>
+    <dl class="specs">
+      <dt>Size</dt><dd>{{ listing.size }}</dd>
+      <dt>Condition</dt><dd>{{ listing.condition }}</dd>
+      <dt>Category</dt><dd>{{ listing.category }}</dd>
+      <dt>Seller</dt><dd>@{{ listing.seller.username }}</dd>
+    </dl>
+    {% if listing.description %}<p>{{ listing.description }}</p>{% endif %}
+
+    {% if listing.is_sold %}
+      <p class="sold-tag">Sold</p>
+    {% elif current_user.is_authenticated and listing.seller_id == current_user.id %}
+      <p class="muted">This is your listing.</p>
+      <form action="{{ url_for('shop.delete_listing', listing_id=listing.id) }}" method="post" onsubmit="return confirm('Remove this listing?')">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-outline">Remove listing</button>
+      </form>
+    {% elif in_cart %}
+      <a href="{{ url_for('shop.cart') }}" class="btn">In your bag. View bag</a>
+    {% else %}
+      <form action="{{ url_for('shop.cart_add', listing_id=listing.id) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn">Add to bag</button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

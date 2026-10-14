@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_macros.html" import card %}
+{% block title %}Shop secondhand{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Pre-loved clothes, <em>new stories.</em></h1>
+  <p>Buy and sell one-of-a-kind secondhand fashion.</p>
+</section>
+
+<form class="filters" method="get">
+  {% if filters.q %}<input type="hidden" name="q" value="{{ filters.q }}">{% endif %}
+  <select name="category" onchange="this.form.submit()" aria-label="Category">
+    <option value="">All categories</option>
+    {% for c in categories %}<option {% if c == filters.category %}selected{% endif %}>{{ c }}</option>{% endfor %}
+  </select>
+  <select name="size" onchange="this.form.submit()" aria-label="Size">
+    <option value="">All sizes</option>
+    {% for s in sizes %}<option {% if s == filters.size %}selected{% endif %}>{{ s }}</option>{% endfor %}
+  </select>
+  <select name="sort" onchange="this.form.submit()" aria-label="Sort">
+    <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Newest</option>
+    <option value="price_low" {% if filters.sort == 'price_low' %}selected{% endif %}>Price: low to high</option>
+    <option value="price_high" {% if filters.sort == 'price_high' %}selected{% endif %}>Price: high to low</option>
+  </select>
+  <noscript><button class="btn btn-small">Apply</button></noscript>
+  {% if filters.q or filters.category or filters.size %}<a href="{{ url_for('shop.index') }}" class="muted">Clear filters</a>{% endif %}
+</form>
+
+{% if listings %}
+  <div class="grid">{% for l in listings %}{{ card(l) }}{% endfor %}</div>
+  {% if pagination.pages > 1 %}
+  <nav class="pager">
+    {% set args = request.args.to_dict() %}
+    {% if pagination.has_prev %}{% set _ = args.update(page=pagination.prev_num) %}<a href="{{ url_for('shop.index', **args) }}">← Previous</a>{% endif %}
+    <span class="muted">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+    {% if pagination.has_next %}{% set _ = args.update(page=pagination.next_num) %}<a href="{{ url_for('shop.index', **args) }}">Next →</a>{% endif %}
+  </nav>
+  {% endif %}
+{% else %}
+  <p class="empty">No items match. Try different filters.</p>
+{% endif %}
+{% endblock %}

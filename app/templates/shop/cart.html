@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import photo %}
+{% block title %}Your bag{% endblock %}
+{% block content %}
+<h1>Your bag</h1>
+{% if items %}
+  <ul class="cart">
+    {% for l in items %}
+    <li>
+      <a href="{{ url_for('shop.listing_detail', listing_id=l.id) }}">{{ photo(l, 'thumb') }}</a>
+      <div class="grow">
+        <a href="{{ url_for('shop.listing_detail', listing_id=l.id) }}"><strong>{{ l.title }}</strong></a>
+        <div class="muted">{{ l.brand }} · Size {{ l.size }}</div>
+      </div>
+      <span>{{ l.price }}</span>
+      <form action="{{ url_for('shop.cart_remove', listing_id=l.id) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="link">Remove</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+  <div class="cart-total">
+    <span>Total <strong>{{ total }}</strong></span>
+    <form action="{{ url_for('shop.checkout') }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn">Place order (demo)</button>
+    </form>
+  </div>
+{% else %}
+  <p class="empty">Your bag is empty. <a href="{{ url_for('shop.index') }}">Start browsing</a></p>
+{% endif %}
+{% endblock %}

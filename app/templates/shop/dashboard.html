@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Your dashboard{% endblock %}
+{% block content %}
+<h1>Hi, {{ current_user.username }}</h1>
+<div class="stats">
+  <div><strong>{{ listings|selectattr('is_sold', 'equalto', false)|list|length }}</strong><span>Active listings</span></div>
+  <div><strong>{{ listings|selectattr('is_sold')|list|length }}</strong><span>Items sold</span></div>
+  <div><strong>{{ earned }}</strong><span>Earned</span></div>
+</div>
+
+<h2>Your listings</h2>
+{% if listings %}
+<table class="table">
+  <thead><tr><th>Item</th><th>Price</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for l in listings %}
+    <tr>
+      <td><a href="{{ url_for('shop.listing_detail', listing_id=l.id) }}">{{ l.title }}</a></td>
+      <td>{{ l.price }}</td>
+      <td>{% if l.is_sold %}<span class="pill sold">Sold</span>{% else %}<span class="pill">Active</span>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">Nothing listed yet. <a href="{{ url_for('shop.sell') }}">Sell your first item</a></p>
+{% endif %}
+
+<h2>Your orders</h2>
+{% if orders %}
+<table class="table">
+  <thead><tr><th>Order</th><th>Items</th><th>Total</th></tr></thead>
+  <tbody>
+  {% for o in orders %}
+    <tr><td>#{{ o.id }}</td><td>{{ o.items|map(attribute='title')|join(', ') }}</td><td>{{ o.total }}</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">No purchases yet.</p>
+{% endif %}
+{% endblock %}
