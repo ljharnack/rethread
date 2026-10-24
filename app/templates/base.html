@@ -9,7 +9,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-  <div class="demo-banner">Portfolio demo project. No real items are sold and no payments are taken.</div>
+  <div class="demo-banner">
+    {% if config.STATIC_PREVIEW %}
+      Static preview: browsing only. Accounts, selling and checkout work when you run the app locally (see the GitHub README).
+    {% else %}
+      Portfolio demo project. No real items are sold and no payments are taken.
+    {% endif %}
+  </div>
   <header class="site-header">
     <a class="logo" href="{{ url_for('shop.index') }}">ReThread</a>
     <form class="search" action="{{ url_for('shop.index') }}" method="get">
