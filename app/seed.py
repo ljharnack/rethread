@@ -1,5 +1,9 @@
 """`flask seed` — fills the database with demo users and listings."""
+import os
+import shutil
+
 import click
+from flask import current_app
 from flask.cli import with_appcontext
 
 from . import db
@@ -47,6 +51,42 @@ DEMO_LISTINGS = [
      "Small 14k gold vermeil hoops, comes with original pouch."),
 ]
 
+# Listing title -> image file in app/seed_images/.
+# Titles must match DEMO_LISTINGS exactly. Missing files fall back to the placeholder.
+SEED_IMAGES = {
+    "Vintage Levi's 501 Jeans": "rethread-levis-jeans.jpg",
+    "Oversized Wool Overcoat": "rethread-wool-overcoat.jpg",
+    "Silk Slip Dress": "rethread-silk-dress.jpg",
+    "Chuck Taylor All Star Hi": "rethread-chuck-taylors.jpg",
+    "Cable Knit Fisherman Sweater": "rethread-cable-sweater.jpg",
+    "Leather Crossbody Bag": "rethread-crossbody-bag.jpg",
+    "Linen Button-Down Shirt": "rethread-linen-shirt.jpg",
+    "Pleated Wide-Leg Trousers": "rethread-wide-leg-trousers.jpg",
+    "90s Denim Trucker Jacket": "rethread-denim-jacket.jpg",
+    "Floral Wrap Midi Dress": "rethread-floral-dress.jpg",
+    "Chelsea Boots": "rethread-chelsea-boots.jpg",
+    "Cashmere Beanie": "rethread-cashmere-beanie.jpg",
+    "Graphic Band Tee": "rethread-band-tee.jpg",
+    "Corduroy Mini Skirt": "rethread-corduroy-skirt.jpg",
+    "Puffer Vest": "rethread-puffer-vest.jpg",
+    "Gold Hoop Earrings": "rethread-gold-hoops.jpg",
+}
+
+
+def copy_seed_image(filename):
+    """Copy an image from seed_images/ into the upload folder.
+
+    Returns the filename if it was copied, or None if the file is missing.
+    """
+    if not filename:
+        return None
+    source = os.path.join(current_app.root_path, "seed_images", filename)
+    if not os.path.exists(source):
+        click.echo(f"Missing image: {filename} (using placeholder)")
+        return None
+    shutil.copy(source, current_app.config["UPLOAD_FOLDER"])
+    return filename
+
 
 @click.command("seed")
 @with_appcontext
@@ -62,10 +102,18 @@ def seed_command():
         users.append(user)
     db.session.add_all(users)
 
+    # Catch typos: every key in SEED_IMAGES should be a real listing title.
+    titles = {listing[0] for listing in DEMO_LISTINGS}
+    for title in SEED_IMAGES:
+        if title not in titles:
+            click.echo(f"Warning: SEED_IMAGES has no matching listing for {title!r}")
+
     for i, (title, brand, category, size, condition, price, desc) in enumerate(DEMO_LISTINGS):
+        filename = copy_seed_image(SEED_IMAGES.get(title))
         db.session.add(Listing(
             title=title, brand=brand, category=category, size=size, condition=condition,
             price_cents=int(price * 100), description=desc, seller=users[i % len(users)],
+            image_filename=filename,
         ))
 
     # One completed sale, so the dashboard shows order history.
