@@ -27,7 +27,7 @@ A secondhand clothing marketplace where users can list pre-owned items, browse a
 ## Run it locally
 
 ```bash
-git clone https://github.com/<your-username>/rethread.git
+git clone https://github.com/ljharnack/rethread.git
 cd rethread
 python3 -m venv .venv
 source .venv/bin/activate
