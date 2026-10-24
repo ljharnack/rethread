@@ -4,6 +4,8 @@ A secondhand clothing marketplace where users can list pre-owned items, browse a
 
 > Portfolio project: checkout is simulated. No real payments are processed.
 
+**Live demo:** https://ljharnack-rethread.netlify.app
+
 ## Features
 
 - **Accounts**: registration and login with hashed passwords (Flask-Login)
